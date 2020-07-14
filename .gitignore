@@ -1,2 +1,4 @@
 log.txt
 /Environment/hmi_env
+/Algorithm/Historical\ Periods/scraping_histo_periods_wiki.py
+/Algorithm/Historical\ Periods/module_dates.py
