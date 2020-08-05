@@ -1,6 +1,14 @@
-log.txt
 /test.py
+/imdbpy_interfaces
 /Environment/hmi_env
-/Algorithm/Historical\ Periods/scraping_histo_periods_wiki.py
-/Algorithm/Historical\ Periods/module_dates.py
-/Algorithm/Historical\ Periods/history_by_period_wikipedia.html
+/__pycache__
+/Website\ Code/flask_backend/__pycache__
+/Website\ Code/flask_backend/.idea
+/Website\ Code/flask_backend/database/__pycache__
+/Website\ Code/flask_backend/database/historical_periods/__pycache__
+/Website\ Code/flask_backend/database/historical_periods/scraping_histo_periods_wiki.py
+/Website\ Code/flask_backend/database/history_movies_index_shortversion.db
+/Website\ Code/flask_backend/database/history_movies_index.db
+/Website\ Code/flask_backend/database/imdb_query_db.py
+/Website\ Code/flask_backend/history_movies_index_shortversion.db
+/Website\ Code/flask_backend/sorting_algorithm

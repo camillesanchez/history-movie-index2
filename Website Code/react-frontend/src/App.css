@@ -1,0 +1,17 @@
+.App {
+  margin: 25px 70px;
+}
+
+/*html {
+  background-color: #F5E8E0;
+}*/
+
+body{
+  background: url("./files/coffee-apple.jpg") no-repeat center center fixed;
+  -webkit-background:cover;
+  -moz-background:cover;
+  -o-background:cover;
+  background:cover;
+  background-size: auto auto; 
+  opacity: 100%;
+}
