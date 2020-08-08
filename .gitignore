@@ -1,12 +1,13 @@
 /test.py
 /imdbpy_interfaces
 /Environment/hmi_env
-/__pycache__
-/Website\ Code/flask_backend/__pycache__
+**/__pycache__
+# /Website\ Code/flask_backend/__pycache__
 /Website\ Code/flask_backend/.idea
-/Website\ Code/flask_backend/database/__pycache__
-/Website\ Code/flask_backend/database/historical_periods/__pycache__
+# /Website\ Code/flask_backend/database/__pycache__
+# /Website\ Code/flask_backend/database/historical_periods/__pycache__
 /Website\ Code/flask_backend/database/historical_periods/scraping_histo_periods_wiki.py
+**/.DS_Store
 /Website\ Code/flask_backend/database/history_movies_index_shortversion.db
 /Website\ Code/flask_backend/database/history_movies_index.db
 /Website\ Code/flask_backend/database/imdb_query_db.py
