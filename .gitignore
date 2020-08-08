@@ -13,3 +13,4 @@
 /Website\ Code/flask_backend/database/imdb_query_db.py
 /Website\ Code/flask_backend/history_movies_index_shortversion.db
 /Website\ Code/flask_backend/sorting_algorithm
+/Website\ Code/flask_backend/database/title.basics.tsv
