@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme=>({
     height:theme.spacing(13)
   },
   listItem:{
-    color: "white"
+    color: "#F5E7DF"
   }
 }));
 
@@ -55,10 +55,6 @@ const menuItems = [
     listIcon: <Timeline/>,
     listText: "Timeline",
     listPath: "/period_timeline"
-  },
-  {
-    listIcon: <Movie/>,
-    listText: "Selected Movie"
   },
   {
     listIcon: <ContactSupport/>,

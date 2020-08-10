@@ -18,7 +18,8 @@ const useStyles = makeStyles(theme=>({
     margin:theme.spacing(1),
   },
   title:{
-    color: "#AD5F3D"
+    color: "#AD5F3D",
+    fontStyle: "bold"
   },
   subtitle:{
     color: "#B5A093",
@@ -36,7 +37,7 @@ const useStyles = makeStyles(theme=>({
 }));
 
 const Header = () => {
-    const classes = useStyles()
+  const classes = useStyles()
   return (
     <Box className={classes.typedContainer} >
         <Grid container justify ="center">

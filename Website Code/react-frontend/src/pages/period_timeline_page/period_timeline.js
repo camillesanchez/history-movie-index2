@@ -3,6 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Typography, Box, List, ListItem} from "@material-ui/core";
 import { Link } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
+import axios from 'axios';
+import { useState } from 'react';
 
 // CSS Styles
 const useStyles = makeStyles(theme => ({
@@ -17,7 +19,7 @@ const useStyles = makeStyles(theme => ({
             content: "''",
             position: "absolute",
             height: "100%",
-            border: "1px solid tan",
+            border: "1px solid #B58D82",
             right: "40px",
             top: 0
         },
@@ -36,7 +38,7 @@ const useStyles = makeStyles(theme => ({
     },
     timeLineItem: {
         padding: "1rem",
-        borderBottom: "2px solid tan",
+        borderBottom: "2px solid #B58D82",
         position: "relative",
         margin: "1rem 3rem 1rem 1rem",
         clear: "both",
@@ -50,7 +52,7 @@ const useStyles = makeStyles(theme => ({
             right: "-0.625rem",
             top: "calc(50% -5px)",
             borderStyle: "solid",
-            borderColor: "tomato tomato transparent transparent",
+            borderColor: "#FFB5A1 #FFB5A1 transparent transparent",
             borderWidth: "0.625rem",
             transform: "rotate(45deg)"
         },
@@ -60,12 +62,12 @@ const useStyles = makeStyles(theme => ({
             "&:nth-of-type(2n)": {
                 float:"right",
                 margin: "1rem",
-                borderColor: "tan"
+                borderColor: "#B58D82"
             },
             "&:nth-of-type(2n):before": {
                 right: "auto",
                 left: "-0.625rem",
-                borderColor: "transparent transparent tomato tomato"
+                borderColor: "transparent transparent #FFB5A1 #FFB5A1"
             }
         }
     },
@@ -74,7 +76,7 @@ const useStyles = makeStyles(theme => ({
         maxWidth: "9.375rem",
         margin: "0 3rem 0 auto",
         fontSize: "1.8rem",
-        background: "blue",
+        background: "#B58D82",
         color: "white",
         lineHeight: 1,
         padding: "0.5rem 0 1rem",
@@ -94,7 +96,7 @@ const useStyles = makeStyles(theme => ({
         }
     },
     heading: {
-        color: "tomato",
+        color: "#FFB5A1",
         padding: "3rem 0",
         textTransform: "uppercase"
     },
@@ -143,9 +145,13 @@ const periodItems = [
   }
 ]
 
-// NEED TO FIX THE VISUAL BECAUSE OF LINE ITEM!! Would be great if goes back to one side vs the other
 const PeriodTimeline = () => {
     
+    const [filmList, setFilmList] = useState([]);
+
+    const response = axios.get("http://127.0.0.1:5000/period_timeline").then((films) => setFilmList(films.data))
+    // to get an item: {filmList}
+
     const classes = useStyles()
 
     return (
@@ -155,6 +161,7 @@ const PeriodTimeline = () => {
                 <Typography variant="h4" align="center" className= {classes.heading}> 
                     Period Timeline
                 </Typography>
+                
                 <Box component="div" className={classes.timeLine}> 
                     {periodItems.map((lsItem) => (
                         <Link style={{ textDecoration: 'none' }} to={lsItem.itemPath}>
@@ -165,10 +172,10 @@ const PeriodTimeline = () => {
                                 <Typography variant="h5" align= "center" className={classes.subHeading}>
                                     {lsItem.itemPeriod}
                                 </Typography>
-                                <Typography variant="body1" align= "center" style={{color: "tomato"}}>
+                                <Typography variant="body1" align= "center" style={{color: "#FFB5A1"}}>
                                     {lsItem.itemDates}
                                 </Typography>
-                                <Typography variant="subtitle1" align= "center" style={{color: "tan"}}>
+                                <Typography variant="subtitle1" align= "center" style={{color: "#B58D82"}}>
                                     {lsItem.itemSubperiods}
                                 </Typography>
 
