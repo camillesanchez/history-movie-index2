@@ -2,11 +2,14 @@ from database.models import *
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 from flask import Flask, g, request
+from flask.json import jsonify
+from flask_cors import CORS
 import sqlite3
 
 app = Flask(__name__)
+CORS(app)
 
-DATABASE = '/Users/camillesanchez/Desktop/hmi/Website Code/flask_backend/database/history_movies_index_shortversion.db'
+DATABASE = '/Users/camillesanchez/Desktop/hmi/Website Code/flask_backend/database/history_movies_index.db'
 
 def init_session():
     """
@@ -19,62 +22,32 @@ def init_session():
 
     return session
 
-def get_db():
-    db = getattr(g, "_database", None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-        return db
-
-@app.teardown_appcontext
-def close_connection(exception):
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
-
-def query_db(query, args=(), one=False):
-    cur = get_db().execute(query, args)
-    rv = cur.fetchall()
-    if rv:
-        print("Gets data from DB")
-    cur.close()
-    return (rv[0] if rv else None) if one else rv
-
-@app.route('/')
-def index():
-    return "hello"
-
-@app.route('/json_test')
-def json_test():
-    session = init_session()
-
-
-
-@app.route('/selected_film')
-def getSelectedFilm():
-
-    test = request.args.get('test')
-    print(test)
-
-    res = query_db('select * from film')
-
-    for user in res:
-        # print(user[0], user[1])
-        pass
-
-    return "1917 is the best film!"
-
-
 @app.route('/')
 def home():
     return 'Hello to the homepage!'
 
-@app.route('/timeline')
-def getTimeline():
+@app.route('/period_timeline')
+def getPeriodTimeline():
     return "Here you will find a timeline with all the periods!"
 
-@app.route('/film_list_for_subperiod')
-def getFilmListForSubperiod():
+@app.route('/subperiod_timeline')
+def getSubPeriodTimeline():
     return "Here you will find a timeline with all the subperiods!"
+
+@app.route('/films_list')
+def getFilmsList():
+    session = init_session()
+    films = session.query(Film).all()
+    results = [film.json() for film in films]
+    for result in results:
+        keys = ["associated_genres", "plots", "synopses"]
+        for key in keys:
+            del result[key]
+    return jsonify(results)
+
+@app.route('/selected_film')
+def getSelectedFilm():
+    return "Here you will find your selecetd film!"
 
 
 if __name__ == '__main__':
