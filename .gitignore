@@ -1,3 +1,4 @@
+/.DS_Store
 /test.py
 /imdbpy_interfaces
 /Environment/hmi_env
@@ -8,9 +9,12 @@
 # /Website\ Code/flask_backend/database/historical_periods/__pycache__
 /Website\ Code/flask_backend/database/historical_periods/scraping_histo_periods_wiki.py
 **/.DS_Store
+/Website\ Code/flask_backend/.DS_Store
 /Website\ Code/flask_backend/database/history_movies_index_shortversion.db
 /Website\ Code/flask_backend/database/history_movies_index.db
 /Website\ Code/flask_backend/database/imdb_query_db.py
+/Website\ Code/flask_backend/database/__pycache__/models.cpython-37.pyc
+/Website\ Code/flask_backend/database/.DS_Store
 /Website\ Code/flask_backend/history_movies_index_shortversion.db
 /Website\ Code/flask_backend/sorting_algorithm
 /Website\ Code/flask_backend/database/title.basics.tsv
