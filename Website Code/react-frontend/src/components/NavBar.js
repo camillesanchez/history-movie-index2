@@ -5,16 +5,16 @@ import {
   ArrowBack,
   Timeline,
   Home,
+  Info,
   Movie,
   ContactMail,
   ContactSupport,
   MenuIcon
-} from '@material-ui/icons';
+} from '@material-ui/icons'; 
 import {
   AppBar,
   Toolbar,
   IconButton,
-  Button,
   Typography,
   ListItem,
   ListItemText,
@@ -57,11 +57,11 @@ const menuItems = [
     listPath: "/period_timeline"
   },
   {
-    listIcon: <ContactSupport/>,
-    listText: "Comments/ Feddbacks"
+    listIcon: <Info/>,
+    listText: "About Project",
+    listPath: "/about"
   }
 ]
-
 
 const NavBar = () => {
 

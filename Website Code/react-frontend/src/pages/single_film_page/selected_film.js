@@ -1,31 +1,29 @@
 import React from 'react';
 import NavBar from "../../components/NavBar.js";
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
-import project1 from "../../files/images/html-css-javascript-lg.jpg"
 import {
     Box,
     Typography,
-    Text,
     Button,
     Grid,
-    Image,
     Card,
-    CardMedia,
-    Divider
+    CardMedia
 } from "@material-ui/core";
+import { useParams } from "react-router";
+import Rectangle from 'react-rectangle';
 
 const useStyles = makeStyles({
   backColor: {
     background: "#AD5F3D",
-    height: "100%",
+    minHeight: "1080px",
     margin: "-4rem 0 0rem"
   },  
   heading: {
       position: "relative",
       color: "white",
-      margin: "0 0 3rem"
+      margin: "0 5rem 3rem 0"
     },
     mainContainer: {
         margin: "4rem",
@@ -36,19 +34,21 @@ const useStyles = makeStyles({
       marginBottom: "1rem",
       marginRight: "3rem",
       color: "black",
-      background: "grey",
+      background: "#B5A093",
       size: "small",
       float: "right"
     },
     imageCard: {
       height: "20rem",
-      width: "14rem"
+      width: "14rem",
+      margin: "0 3rem 1rem 3rem"
     },
     info: {
       marginTop: "3rem",
       justifyContent: "center",
       alignItems: "center",
       marginRight: "2rem",
+      color: "#black"
     },
     image: {
       width: "100%",
@@ -59,37 +59,17 @@ const useStyles = makeStyles({
     }
 })
 
-const filmInfo = [
-    {
-        filmName: "1917",
-        filmReleaseDate: "2018",
-        filmGenre: "Drama, War",
-        filmLength: "1h59min",
-        filmDirector: "Sam Mendes",
-        filmPlot: "April 6th, 1917. As a regiment assembles to wage war deep in enemy territory, two soldiers are assigned to race against time and deliver a message that will stop 1,600 men from walking straight into a deadly trap.",
-        filmTrailer: "trailer link",
-        filmImage: project1
-    }
-]
-
-const periodInfo = [
-    {
-        periodName: "Modern History",
-        subperiodName: "World War I",
-        periodSummary: "World War I began in 1914 after the assassination of Archduke Franz Ferdinand and lasted until 1918. During the conflict, Germany, Austria-Hungary, Bulgaria and the Ottoman Empire (the Central Powers) fought against Great Britain, France, Russia, Italy, Romania, Japan and the United States (the Allied Powers).",
-        periodImage: "link"
-    }
-]
-
 export default function SelectedFilm() {
 
     const [filmList, setFilmList] = useState([]);
 
-    const response = axios.get("http://127.0.0.1:5000/selected_film").then((films) => setFilmList(films.data))
-    // to get an item: {filmList}
+    const { film_id, subperiod_id } = useParams();
+
+    useEffect(() => {
+        axios.get(`http://127.0.0.1:5000/selected_film/${subperiod_id}/${film_id}`).then((films) => setFilmList(films.data));
+    },[]);
 
     const classes = useStyles()
-                  // <Image component="img" alt="Film1" source={lsItem.filmImage} className={classes.imageBox}>
 
   return (
     <>
@@ -97,84 +77,70 @@ export default function SelectedFilm() {
       <Box component= "div" className={classes.backColor}>
         
         <>
-          <Button variant="contained" href="/films_list" className = {classes.button}>
+          <Button variant="contained" href={`/films_list/${subperiod_id}`} className = {classes.button}>
             Back to Films List
           </Button>
         </>
 
         <Box component="div" className={classes.mainContainer}>
 
-          {filmInfo.map((lsItem) => (
             <>
               <Grid container spacing={2}>
                 <Grid xs={6}>
                   <Typography variant="h3" className={classes.heading}>
-                    {lsItem.filmName} 
+                    {filmList["film_title"]} 
                   </Typography>
                   <div className={classes.info}>
                     <Typography variant="h6">
-                      Release date: {lsItem.filmReleaseDate} 
+                      <b>Release date:</b> {filmList["film_release_date"]} 
                     </Typography>
                     <Typography variant="h6">
-                      Genre: {lsItem.filmGenre}
+                      <b>Genre:</b> {filmList["film_genres"]}
                     </Typography>
                     <Typography variant="h6">
-                      Film Length: {lsItem.filmLength}
+                      <b>Film Length:</b> {filmList["film_runtime"]}
                     </Typography>
                     <Typography variant="h6">
-                      Director: {lsItem.filmDirector}
+                      <b>Director:</b> {filmList["film_directors"]}
+                    </Typography>
+                    <Typography variant="h6">
+                      <b>Writer:</b> {filmList["film_writers"]}
                     </Typography>
                   </div>
                 </Grid>
                 <Grid xs={6} >
                   <Card className ={classes.imageCard} >
-                    <CardMedia component="img" alt="Film1" image={lsItem.filmImage} className ={classes.image}/>
+                    <CardMedia component="img" alt={filmList["film_title"]} image={filmList["film_image_url"]} className ={classes.image}/>
                   </Card>
                 </Grid>
                 <Grid xs={12}>
                   <>
-                    <Typography variant="h6">
-                      Plot:
+                    <Typography variant="h6" >
+                      <b>Plot:</b>
                     </Typography>
                     <Typography variant="h6">
-                      {lsItem.filmPlot}
-                    </Typography>
-                    <Typography variant="h6">
-                      Movie Trailer: {lsItem.filmTrailer}
+                      {filmList["film_plot"]}
                     </Typography>
                   </>
                 </Grid>
               </Grid>
             </>
-          ))}  
+            <Rectangle aspectRatio={[7,0.02]}>
+              <div style={{margin: "2rem 0 2rem -0.4rem", background: "#B5A093", width: "30%", height: "100%"}} />
+            </Rectangle>
 
-          <hr />
-
-          {periodInfo.map((lsItem) => (
             <>
               <Grid xs={12}>
                 <div className={classes.info}>
                   <Typography variant="h6">
-                    Historic Period: {lsItem.periodName}
+                    <b>Historic Period:</b> {filmList["film_period"]}
                   </Typography>
                   <Typography variant="h6">
-                    Historic Subperiod: {lsItem.subperiodName}
-                  </Typography>
-                </div>
-              </Grid>
-
-              <Grid xs={12}>
-                <div className={classes.info}>
-                  <Typography variant="h6">
-                    Subperiod Summary:
-                  </Typography>
-                  <Typography variant="h6">
-                    {lsItem.periodSummary}
+                    <b>Historic Subperiod:</b> {filmList["film_subperiod"]}
                   </Typography>
                 </div>
               </Grid>
             </>
-          ))}
         </Box>
       </Box>
     </>

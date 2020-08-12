@@ -6,90 +6,90 @@ import {
     Grid,
     Card,
     CardActionArea,
-    CardActions,
     CardContent,
     CardMedia,
     Typography
-} from "@material-ui/core"
+} from "@material-ui/core";
 import NavBar from "../../components/NavBar.js";
-import project1 from "../../files/images/html-css-javascript-lg.jpg"
-import project2 from "../../files/images/javascript-fullstack.jpg"
-import project3 from "../../files/images/react-redux.jpg"
-import project4 from "../../files/images/mern-stack.jpg"
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams } from "react-router";
+import cat from "../../files/funny/cat.jpg";
+import dog from "../../files/funny/dog.jpg";
+import lama from "../../files/funny/lama.jpg";
+import monkey from "../../files/funny/monkey.jpg";
+import parrot from "../../files/funny/parrot.jpg";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     mainContainer: {
         background: "#AD5F3D",
-        height: "100%"
-    },
-    cardContainer: {
-        maxWidth:300,
-        margin: "1rem auto"
-    },
-    card: {
-        height: "22rem"
+        minHeight: "1080px"
     },
     heading: {
         color: "#FFB5A1",
         padding: "3rem 0 1.4rem",
         textTransform: "uppercase"
+    },
+    cardContainer: {
+        maxWidth:300,
+        margin: "2rem",
+        color: "#B5A093"
+    },
+    overallCardRectangle: {
+        height: "30rem",
+        width: "19rem"
+    },
+    photoItem:{
+        maxWidth: "10rem",
+        height: "100%",
+        marginTop: "1.3rem",
+        marginBottom: "0.4rem"
+    },
+    errorMessage: {
+        color: "#B5A093",
+        margin: "2rem 5rem 2rem",
+        [theme.breakpoints.up("md")]:{
+            margin: "2rem 15rem 2rem"
+        }
+    },
+    errorImageCard: {
+        maxWidth: "35rem",
+        maxHeight: "35rem"
+    },
+    photoError: {
+        height: "100%",
+        width: "100%"
     }
-})
+}))
 
-const selectedFilmsList = [
-    {
-        filmName: "1917",
-        filmPlot: "About film",
-        filmImage: project1,
-        filmPath: "/selected_film"
-    },
-    {
-        filmName: "They shall not grow old",
-        filmPlot: "About filmedn;wj enkjebdfkdjbfkbebkebk ejbkbekbdkebdkeb jdkbjekbdjkejbdkejbdkjbkebjdke bjdkejbdkejbdkejbdkbjekjbdkbkebdjjedbkebdkebdkejbdejk",
-        filmImage: project2,
-        filmPath: "/selected_film"
-    },
-    {
-        filmName: "Journey's end",
-        filmPlot: "About film",
-        filmImage: project3,
-        filmPath: "/selected_film"
-    },
-    {
-        filmName: "Light between oceans",
-        filmPlot: "About film",
-        filmImage: project4,
-        filmPath: "/selected_film"
-    },
-    {
-        filmName: "Titanic",
-        filmPlot: "About film",
-        filmImage: "link",
-        filmPath: "/selected_film"
-    },
-    {
-        filmName: "War Horse",
-        filmPlot: "About film",
-        filmImage: "link",
-        filmPath: "/selected_film"
-    },
-    {
-        filmName: "Tolkien",
-        filmPlot: "About film",
-        filmImage: "link",
-        filmPath: "/selected_film"
-    }
+const photoArr = [
+    cat,
+    dog,
+    lama,
+    monkey,
+    parrot
 ]
+
+function random_item(items){
+    return items[Math.floor(Math.random() * items.length)]
+}
 
 const FilmsList = () => {
     
+    const randomPhoto = random_item(photoArr);
+
     const [filmList, setFilmList] = useState([]);
 
-    const response = axios.get("http://127.0.0.1:5000/films_list").then((films) => setFilmList(films.data))
-    // to get an item: {filmList}
-    
+    const [PeriodSubperiodDict, setPeriodSubperiodDict] = useState({});
+
+    const { subperiod_id } = useParams();
+
+    useEffect(() => {
+        axios.get(`http://127.0.0.1:5000/films_list/${subperiod_id}`).then((films) => setFilmList(films.data));
+        axios.get(`http://127.0.0.1:5000/subperiod_period_names/${subperiod_id}`).then((period_subperiod) => setPeriodSubperiodDict(period_subperiod.data));
+
+    },[]);
+
     const classes = useStyles()
 
     return (
@@ -101,29 +101,47 @@ const FilmsList = () => {
                     <Typography variant="h4" align="center" >
                         Films for:
                     </Typography>
+
                     <Typography variant="h4" align="center">
-                        Modern History - World War I
+                        {PeriodSubperiodDict["period_name"]} - {PeriodSubperiodDict["subperiod_name"]}
                     </Typography>
+
                 </div>
                 <Grid container justify="center">
-                    
-                    {selectedFilmsList.map((lsItem) => (
+                    {filmList.length === 0 && (   
+                        <>
+
+                            <Typography variant="h6" align="center" className ={classes.errorMessage}>
+                                We are sorry but there are no current film matching your current request.
+                            </Typography>
+                        
+                            <Card className= {classes.errorImageCard}>
+                                <CardMedia 
+                                    component="img" 
+                                    image={randomPhoto}
+                                    className={classes.photoError}
+                                />
+                            </Card>
+
+                        </>
+                    )}
+                    {filmList.map((lsItem) => (
                         <Grid item xs={12} sm={8} md={6} className={classes.cardContainer} >
-                            <Card className= {classes.card}>
-                                <CardActionArea href={lsItem.filmPath} >
+                            <Card align="center" className= {classes.overallCardRectangle}>
+                                <CardActionArea href={`/selected_film/${subperiod_id}/${lsItem["film_id"]}`} >
+
                                     <CardMedia 
+                                        className= {classes.photoItem}
                                         component="img" 
-                                        alt="Film1" 
-                                        height="140" 
-                                        image={lsItem.filmImage}
+                                        image={lsItem["film_image_url"]}
                                     />
                                     <CardContent>
                                         <Typography gutterBottom variant="h5">
-                                            Film Title: {lsItem.filmName}
+                                            {lsItem["film_name"]}
                                         </Typography>
                                         <Typography variant="body2" color="textSecondary" component="p">
                                             <Truncate lines={4} ellipsis={"..."}>
-                                                Description: {lsItem.filmPlot}
+                                                {lsItem["film_plot"]}
                                             </Truncate>
                                         </Typography>
                                     </CardContent>

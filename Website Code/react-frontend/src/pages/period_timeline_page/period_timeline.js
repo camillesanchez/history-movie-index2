@@ -4,12 +4,13 @@ import { Typography, Box, List, ListItem} from "@material-ui/core";
 import { Link } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // CSS Styles
 const useStyles = makeStyles(theme => ({
     mainContainer: {
-        background: "#AD5F3D"
+        background: "#AD5F3D",
+        minHeight: "1080px"
     },
     timeLine: {
         position: "relative",
@@ -107,76 +108,41 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const periodItems = [
-  {
-    itemStartDate: "6 million years ago",
-    itemPeriod: "Prehistory",
-    itemDates: "Dates: 6 million years ago - 3600 BCE",
-    itemSubperiods: "Subperiods: Stone Age & Ancient Mesopotamia",
-    itemPath: "/subperiod_timeline"
-  },
-  {
-    itemStartDate: "3600 BCE",
-    itemPeriod: "Ancient History",
-    itemDates: "Dates: 3600 BCE - 500 CE",
-    itemSubperiods: "Subperiods: Bronze Age, Old Kingdom, Indus Valley Civilization, Middle Kingdom, Shang Dynasty, New Kingdom, Vedic Period, Zhou Dynasty, Iron Age, Ancient Greece, Jomon Period, Manhajanpadas, Ancient Rome, Mayan Civilization, Yaoi Period, Moche Civilisation, Yaoi Period  & Coptic Period",
-    itemPath: "/subperiod_timeline"
-  },
-  {
-    itemStartDate: "500 CE",
-    itemPeriod: "Dark Ages",
-    itemDates: "Dates: 500 CE - 1000 CE",
-    itemSubperiods: "Subperiods: (NEED TO BE UPDATED) Bronze Age, Old Kingdom, Indus Valley Civilization, Middle Kingdom, Shang Dynasty, New Kingdom, Vedic Period, Zhou Dynasty, Iron Age, Ancient Greece, Jomon Period, Manhajanpadas, Ancient Rome, Mayan Civilization, Yaoi Period, Moche Civilisation, Yaoi Period  & Coptic Period",
-    itemPath: "/subperiod_timeline"
-  },
-  {
-    itemStartDate: "1000 CE",
-    itemPeriod: "Middle Ages",
-    itemDates: "Dates: 1000 CE - 1500 CE",
-    itemSubperiods: "Subperiods: (NEED TO BE UPDATED) Bronze Age, Old Kingdom, Indus Valley Civilization, Middle Kingdom, Shang Dynasty, New Kingdom, Vedic Period, Zhou Dynasty, Iron Age, Ancient Greece, Jomon Period, Manhajanpadas, Ancient Rome, Mayan Civilization, Yaoi Period, Moche Civilisation, Yaoi Period  & Coptic Period",
-    itemPath: "/subperiod_timeline"
-  },
-  {
-    itemStartDate: "1500 CE",
-    itemPeriod: "Modern History",
-    itemDates: "Dates: 1500 CE - 2020 CE",
-    itemSubperiods: "Subperiods: (NEED TO BE UPDATED) Bronze Age, Old Kingdom, Indus Valley Civilization, Middle Kingdom, Shang Dynasty, New Kingdom, Vedic Period, Zhou Dynasty, Iron Age, Ancient Greece, Jomon Period, Manhajanpadas, Ancient Rome, Mayan Civilization, Yaoi Period, Moche Civilisation, Yaoi Period  & Coptic Period",
-    itemPath: "/subperiod_timeline"
-  }
-]
 
 const PeriodTimeline = () => {
     
     const [filmList, setFilmList] = useState([]);
 
-    const response = axios.get("http://127.0.0.1:5000/period_timeline").then((films) => setFilmList(films.data))
-    // to get an item: {filmList}
+    useEffect(() => {
+        axios.get("http://127.0.0.1:5000/period_timeline").then((films) => setFilmList(films.data));
+    },[]);
 
     const classes = useStyles()
 
     return (
         <>
             <NavBar />
+            
             <Box component="header" className={classes.mainContainer}> 
                 <Typography variant="h4" align="center" className= {classes.heading}> 
                     Period Timeline
                 </Typography>
                 
                 <Box component="div" className={classes.timeLine}> 
-                    {periodItems.map((lsItem) => (
-                        <Link style={{ textDecoration: 'none' }} to={lsItem.itemPath}>
+                    {filmList.map((lsItem) => (
+                        <Link style={{ textDecoration: 'none' }} to={`/subperiod_timeline/${lsItem["period_id"]}`}>
                             <Typography variant="h2" className={`${classes.timeLineYear} ${classes.timeLineItem}`}>
-                                {lsItem.itemStartDate}
+                                {lsItem["period_start_date"]}
                             </Typography>
                             <Box component= "div" className={classes.timeLineItem}>
                                 <Typography variant="h5" align= "center" className={classes.subHeading}>
-                                    {lsItem.itemPeriod}
+                                    {lsItem["period_name"]}
                                 </Typography>
                                 <Typography variant="body1" align= "center" style={{color: "#FFB5A1"}}>
-                                    {lsItem.itemDates}
+                                    Dates: {lsItem["period_dates"]}
                                 </Typography>
                                 <Typography variant="subtitle1" align= "center" style={{color: "#B58D82"}}>
-                                    {lsItem.itemSubperiods}
+                                    Subperiods: {lsItem["periods_subperiods"]}
                                 </Typography>
 
                             </Box>
