@@ -55,11 +55,10 @@ for period_index in data:
             query = session.query(Keyword).filter_by(keyword_word = every_keyword)
             if query.count() == 0:
                 keyword_instance.keyword_word = every_keyword
-                keyword_instance.associated_subperiods.append(subperiod_instance)
-                print("{keyword_instance} added")
                 session.add(keyword_instance)
-            elif query.count() != 0:
-                print("{keyword_instance} set to Null?")
+                
+            else:
+                keyword_instance = query.one()
                 keyword_instance.associated_subperiods.append(subperiod_instance)
 
         session.add(subperiod_instance)

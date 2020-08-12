@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 import csv, json
 
 # File names:
-DATABASE = "history_movies_index.db"
+DATABASE = "history_movies_index2.db"
 IMDB_file = "title.basics.tsv"
 
 # Connect to DB
@@ -20,10 +20,9 @@ read_tsv = csv.reader(tsv_f, delimiter = "\t")
 counter =0
 
 for row in read_tsv:
-    if counter <10:
-        print(counter)
-        print(row)
-        
+    print(counter)
+    print(row)
+    if counter <= 2000:
         # Create film in DB:
         if row[1] == "movie":
 
@@ -56,23 +55,19 @@ for row in read_tsv:
 
             if film.year == None or film.year == '\\N':
                 pass
-            # elif int(film.year) == 2020:
-            #     pass
-            else:
+            elif int(film.year) == 2019 or int(film.year) == 2020:
                 # Add Genres to table in DB
-                print(row[8])
                 if row[8] != None:
                     genres_list = row[8].split(",")
                     for genre in genres_list:
-                        print(genre)
                         query = session.query(Genre).filter_by(genre_type = genre)
                         genre_instance = Genre()
                         if query.count() ==0:
                             genre_instance.genre_type = genre
                             session.add(genre_instance)
-                            genre_instance.associated_films.append(film)
                         else:
-                            genre_instance.associated_films.append(film) # this line means the genre = None
+                            genre_instance = query.one()
+                        genre_instance.associated_films.append(film) 
 
                 # Retreiving data from IMDb and setting them to Null in DB or value:
                 retrieved_data = getIMDbDataFromFields(film.id_imdb, "plot", "synopsis","director","writer","cast", "cover url")
@@ -94,16 +89,10 @@ for row in read_tsv:
                     if retrieved_data[0] !=None:
                         for plot in retrieved_data[0]:
                             # WARNING some plot might be there twice
-                            # query = session.query(Plot).filter_by(plot_script = plot)
                             plot_instance = Plot()
-                            # if query.count() >1:
-                            #     if query.plot_script != plot:
                             plot_instance.plot_script = plot
                             plot_instance.associated_film = film
                             session.add(plot_instance)
-
-                        #     if keyword_instance.keyword_word in plot:
-                        #         plot_instance.associated_keywords.append(keyword_instance)
 
                     # Create Synopsis table:
                     if retrieved_data[1] !=None:
@@ -112,9 +101,6 @@ for row in read_tsv:
                             synopsis_instance.synopsis_script = synopsis
                             synopsis_instance.associated_film = film
                             session.add(synopsis_instance)
-
-                            # if keyword_instance.keyword_word in synopsis:
-                            #     synopsis_instance.associated_keywords.append(keyword_instance)
 
                     session.add(film)
                     counter+=1
