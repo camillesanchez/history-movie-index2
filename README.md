@@ -23,6 +23,8 @@ I believe maintsream media can help young generations (and older) visualize time
         python imdb_import_films.py
         python imdb_import_make_connections.py
 
+This will create your SQLAlchemy database.
+
 4. To launch the Flask / React app, run the following prompts:
         
 -  in the flask_backend directory, launch flask:
@@ -34,6 +36,8 @@ I believe maintsream media can help young generations (and older) visualize time
 
         yarn start or npm start
 
+### Note: imdbpy-master is not my code!! But the official [github repository](https://github.com/alberanid/imdbpy) to the IMDbPY python packages. THANKS TO IMDB FOR ALLOWING US TO USE THE DATA!!
+
 ## License
 
 [MIT License](https://github.com/camillesanchez/history-movie-index2/blob/master/LICENSE)
@@ -41,3 +45,40 @@ I believe maintsream media can help young generations (and older) visualize time
 ## Contributing
 
 For any changes, please open an issue first to discuss what you would like to change. 
+
+## File organisation:
+
+- Website Code
+      - flask_backend
+              - app.py
+
+              - database
+                - imdb_create_db.py
+                - imdb_import_periods_subperiods_keywords.py
+                - imdb_import_films.py
+                - imdb_import_make_connections.py
+                - models.py
+                - module_db.py
+                - historical periods.json
+                (- title.basics.tsv) 
+
+                - historical_periods
+
+      - react-frontend
+              - src
+                - App.js
+
+                - pages
+                  - home.js
+                  - about.js
+                  - period_timeline.js
+                  - superiod_timeline.js
+                  - films_list.js
+                  - selected_film.js
+
+                - components
+
+                - files
+- imdbpy-master
+
+By running imdb_import_periods_subperiods_keywords.py, you will automatically run the files from the historical_periods folder to get the most updated data from both the website (where the periods and subperiods were webscrapped from) and from the json file where the keywords were listed.
