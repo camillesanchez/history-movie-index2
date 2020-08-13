@@ -36,7 +36,11 @@ This will create your SQLAlchemy database.
 
         yarn start or npm start
 
-### Note: imdbpy-master is not my code!! But the official [github repository](https://github.com/alberanid/imdbpy) to the IMDbPY python packages. THANKS TO IMDB FOR ALLOWING US TO USE THE DATA!!
+### Note: imdbpy-master is not my code!! 
+
+But the official [github repository](https://github.com/alberanid/imdbpy) to the IMDbPY python packages. 
+
+Thanks to IMDb for allowing us to use their data!
 
 ## License
 
@@ -48,10 +52,9 @@ For any changes, please open an issue first to discuss what you would like to ch
 
 ## File organisation:
 
-- Website Code
-      - flask_backend
+        - Website Code
+           - flask_backend
               - app.py
-
               - database
                 - imdb_create_db.py
                 - imdb_import_periods_subperiods_keywords.py
@@ -63,8 +66,7 @@ For any changes, please open an issue first to discuss what you would like to ch
                 (- title.basics.tsv) 
 
                 - historical_periods
-
-      - react-frontend
+        - react-frontend
               - src
                 - App.js
 
@@ -79,6 +81,6 @@ For any changes, please open an issue first to discuss what you would like to ch
                 - components
 
                 - files
-- imdbpy-master
+        - imdbpy-master
 
 By running imdb_import_periods_subperiods_keywords.py, you will automatically run the files from the historical_periods folder to get the most updated data from both the website (where the periods and subperiods were webscrapped from) and from the json file where the keywords were listed.
