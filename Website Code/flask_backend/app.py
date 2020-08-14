@@ -1,4 +1,5 @@
 from database.models import *
+from app_modules import *
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 from flask import Flask, g, request
@@ -12,9 +13,8 @@ CORS(app)
 DATABASE = '/Users/camillesanchez/Desktop/hmi/Website Code/flask_backend/database/history_movies_index.db'
 
 def init_session():
-    """
-    :return: Session
-    """
+    """ Returns a new session """
+
     engine = create_engine('sqlite:///'+DATABASE)
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
@@ -24,45 +24,50 @@ def init_session():
 
 @app.route('/')
 def home():
+    """ Route to the homepage. """
+
     return 'Hello to the homepage!'
 
 @app.route('/about')
 def about():
+    """ Route to the about page. """
+
     return 'Hello to the about page!'
 
 @app.route('/period_timeline')
 def getPeriodTimeline():
-    """ Returns a dictionary with all the necessary period data."""
+    """ Route to the Period Timeline Page.
+    Returns a json with all the necessary information for the Period timeline page."""
 
-    # Gets json file with periods information
+    # Inits session and gets json file with periods information
     session = init_session()
     periods = session.query(Period).all()
-    print(periods)
 
     multiperiods = []
+    # Gets necessary fiels from period query
     for period in periods:
-        # period name & id
+        # gets period name & id
         period_id = period.id
         period_name = period.period_name
         
-        # period dates:
+        # formats period dates
         period_start_date = period.start_date
         period_end_date = period.end_date
         period_dates = f"{period_start_date} - {period_end_date}"
         
-        # Subperiod content:
-        periods_subperiods = period.subperiods
-        subperiods= ""
+        # formats subperiod content
+        subperiods_string = ""
         for subperiod in period.subperiods:
             if subperiod != period.subperiods[-1]:
-                subperiods += subperiod.subperiod_name + ", "
+                subperiods_string += subperiod.subperiod_name + ", "
             else:
-                subperiods += "& " + subperiod.subperiod_name
+                subperiods_string += "& " + subperiod.subperiod_name
         
-        # Json format:
-        period_json = {"period_id": period_id, "period_name": period_name, "period_start_date": period_start_date, "period_dates": period_dates, "periods_subperiods": subperiods}
-        multiperiods.append(period_json)
+        # Create list of period dictionaries & close session
+        period_dictionary = {"period_id": period_id, "period_name": period_name, "period_start_date": period_start_date, "period_dates": period_dates, "period_subperiods": subperiods_string}
+        multiperiods.append(period_dictionary)
 
+    # Transform list in Json format:
     periods_json =json.dumps(multiperiods, indent =4)
     print(periods_json)
     session.close()
@@ -71,87 +76,99 @@ def getPeriodTimeline():
 
 @app.route('/subperiod_timeline/<int:period_id>')
 def getSubPeriodTimeline(period_id):
-    """ Returns a dictionary with all the necessary subperiod data from period_id, 
-    passed from the /period_timeline/ page."""
+    """ Route to the Subperiod Timeline Page.
+    Returns a json with all the necessary subperiod data from period_id."""
 
-    # Gets json file with periods information
+    # Inits a session & queries all subperiods for specific period_id
     session = init_session()
-
     subperiods = session.query(Subperiod).join(Subperiod.associated_period).filter(Period.id == period_id).all()
 
     multisubperiods = []
     for subperiod in subperiods:
-        # Subperiod name
+        # Gets subperiod ID & name
         subperiod_id = subperiod.id
         subperiod_name = subperiod.subperiod_name
         
-        # Subperiod dates:
+        # Formats subperiod dates:
         subperiod_start_date = subperiod.start_date
         subperiod_end_date = subperiod.end_date
         subperiod_dates = f"{subperiod_start_date} - {subperiod_end_date}"
         
-        # Subperiod locations:
-        subperiods_locations = subperiod.period_location
+        # Formats subperiod locations:
+        subperiod_locations = subperiod.period_location
         
-        # Json format:
-        subperiod_json = {"subperiod_id": subperiod_id, "subperiod_name": subperiod_name, "subperiod_start_date": subperiod_start_date, "subperiod_dates": subperiod_dates, "subperiods_locations": subperiods_locations}
-        multisubperiods.append(subperiod_json)
-        
+        # Create list of subperiod dictionaries
+        subperiod_dictionary = {"subperiod_id": subperiod_id, "subperiod_name": subperiod_name, "subperiod_start_date": subperiod_start_date, "subperiod_dates": subperiod_dates, "subperiod_locations": subperiod_locations}
+        multisubperiods.append(subperiod_dictionary)
+    
+    # Transforms list in Json format & close session:
     subperiods_json =json.dumps(multisubperiods, indent =4)
-
     session.close()
 
     return subperiods_json
 
 @app.route('/subperiod_period_names/<int:subperiod_id>')
 def getSubperiodPeriodNames(subperiod_id):
-    """ Returns a dictionary with the name of the period and subperiod 
+    """ Route that returns a dictionary with the name of the period and subperiod 
     that did not return a film list."""
 
+    # Inits session with db
     session = init_session()
     
+    # Query subperiod and period name from subperiod_id
     query_subperiod = session.query(Subperiod).filter(Subperiod.id ==subperiod_id).one()
     subperiod_name = query_subperiod.subperiod_name 
     period_name = query_subperiod.associated_period.period_name
+
+    # Closes session
+    session.close()
 
     return {"period_name": period_name, "subperiod_name": subperiod_name}
 
 @app.route('/films_list/<int:subperiod_id>')
 def getFilmsList(subperiod_id):
-    """ Returns a json of the films found from subperiod (subperiod_id 
-    passed from the /subperiod_timeline/ page."""
+    """ Route to the films_list page.
+    Returns a json of the films found after complex database query from subperiod_id."""
 
+    # Inits session
     session = init_session()
 
-    query_films_par_plot = session.query(Film).join(Film.plots).join(Plot.associated_keywords).join(Keyword.associated_subperiods).filter(Subperiod.id == subperiod_id)
-    
-    query_films_par_synopsis = session.query(Film).join(Film.synopses).join(Synopsis.associated_keywords).join(Keyword.associated_subperiods).filter(Subperiod.id == subperiod_id)
-
-    query_totale = query_films_par_plot.union( query_films_par_synopsis )
-
+    # Query Database to get Subperiod and Period Names:
     query_subperiod = session.query(Subperiod).filter(Subperiod.id ==subperiod_id).one()
     subperiod_name = query_subperiod.subperiod_name 
     period_name = query_subperiod.associated_period.period_name
 
+    ## Complex query:
+        # Query Database from Film > Plots > Keywords > Subperiod
+    query_films_par_plot = session.query(Film).join(Film.plots).join(Plot.associated_keywords).join(Keyword.associated_subperiods).filter(Subperiod.id == subperiod_id)
+    
+        # Query Database from Film > Synopses > Keywords > Subperiod
+    query_films_par_synopsis = session.query(Film).join(Film.synopses).join(Synopsis.associated_keywords).join(Keyword.associated_subperiods).filter(Subperiod.id == subperiod_id)
+
+        # Join queries to create a complete query
+    query_totale = query_films_par_plot.union( query_films_par_synopsis )
+
+    # Gets first 10 films from query:
     counter = 0
     multifilms = []
     for film in query_totale:
         counter +=1
         if counter <=10:
+            # Gets film name & ID
             film_id = film.id
             film_name = film.primary_title
 
-            # Format film plot
+            # Formats film plot to remove author's name
             film_plot = film.plots[0].plot_script
             new_film_plot = film_plot.split("::")[0]
             film_image_url = film.image_url
             
-            # Json format:
-            film_json = {"period_name": period_name, "subperiod_name": subperiod_name, "film_id": film_id, "film_name": film_name, "film_plot": new_film_plot, "film_image_url": film_image_url}
-            multifilms.append(film_json)
+            # Creates a list of dictionaries of the films selected from complexe query
+            film_dictionary = {"period_name": period_name, "subperiod_name": subperiod_name, "film_id": film_id, "film_name": film_name, "film_plot": new_film_plot, "film_image_url": film_image_url}
+            multifilms.append(film_dictionary)
         else:
             break
-        
+    # Gets a json from list of dictionaries & closes session
     films_json =json.dumps(multifilms, indent =4)
     print(films_json)
     session.close()
@@ -160,85 +177,66 @@ def getFilmsList(subperiod_id):
 
 @app.route('/selected_film/<int:subperiod_id>/<int:film_id>')
 def getSelectedFilm(subperiod_id, film_id):
-    """ Returns a dictionary of all the necesarry selected film data 
-    from film_id passed from the /films_list/ page."""
+    """ Route to selected_film page.
+    Returns a dictionary with specific film data from film_id."""
 
-    print(subperiod_id, film_id)
+    # Inits session
     session = init_session()
 
-    # Get period and subperiod info
+    selected_film_dictionary = {}
+
+    # Queries period and subperiod names
     subperiod = session.query(Subperiod).filter(Subperiod.id == subperiod_id).one()
-    
     film_subperiod = subperiod.subperiod_name
+    selected_film_dictionary["film_subperiod"] = film_subperiod
     film_period = subperiod.associated_period.period_name
+    selected_film_dictionary["film_period"] = film_period
 
-    # Get Film info
+    # Queries Film data
     film = session.query(Film).filter(Film.id == film_id).one()
-
+        # Gets film ID, primary title, release year & film_URL
     film_id = film.id
+    selected_film_dictionary["film_id"] = film_id
     film_title = film.primary_title
+    selected_film_dictionary["film_title"] = film_title
     film_release_date = film.year
+    selected_film_dictionary["film_release_date"] = film_release_date
+    film_image_url = film.image_url
+    selected_film_dictionary["film_image_url"] = film_image_url
 
-    # Format runtime
-    if film.runtime != None:
-        number_hours = math.floor(int(film.runtime)/60)
-        number_minutes = math.floor(int(film.runtime) - (number_hours * 60))
-        if number_hours ==0:
-            film_runtime = f"{number_minutes}min"
-        elif number_minutes == 0:
-            film_runtime = f"{number_hours}h"
-        else:
-            film_runtime = f"{number_hours}h {number_minutes}min"
-    else:
-        film_runtime = "Unknown"
+        # Formats film runtime time
+    print(film.runtime)
+    film_runtime = formatsFilmRuntime(film.runtime)
+    selected_film_dictionary["film_runtime"] = film_runtime
 
-    # Format genres
-    genres = ""
-    if len(film.associated_genres) >=0:
-        print("here", len(film.associated_genres))
-        genres = "Unknown"
-    else:
-        for genre in film.associated_genres:
-            if len(film.associated_genres) == 1:
-                print("here2")
-                genres = genre.genre_type
-            elif genre != film.associated_genres[-1]:
-                genres += genre.genre_type + ", "
-            elif genre == film.associated_genres[-1]:
-                genres += "& " + genre.genre_type
+        # Formats film's genres
+    print(film.associated_genres)
+    genres = formatsGenres(film.associated_genres)
+    selected_film_dictionary["film_genres"] = genres
 
-    # Directors:
-    film_directors=""
-    for director in film.director:
-        if len(film.director) == 1:
-            film_directors = director
-        elif director != film.director[-1]:
-            film_directors += director + ", "
-        else:
-            film_directors += "& " + director 
+        # Formats Directors' names:
+    print(film.director)
+    film_directors = formatsDirectorsField(film.director)
+    selected_film_dictionary["film_directors"] = film_directors
 
-    # Writers:
-    film_writers=""
-    if film.writer != None:
-        for writer in film.writer:
-            if len(film.writer) == 1:
-                film_writers = director
-            elif writer != film.writer[-1]:
-                film_writers += writer + ", "
-            else:
-                film_writers += "& " + writer 
-    else:
-        film_writers = "Unknown"
+        # Formats writers' names:
+    print(film.writer)
+    film_writers = formatsWritersField(film.writer)
+    selected_film_dictionary["film_writers"] = film_writers
 
-    # Format film plot
+        # Formats film plot by removing author
     film_plot = film.plots[0].plot_script
     new_film_plot = film_plot.split("::")[0]
+    selected_film_dictionary["film_plot"] = new_film_plot
 
-    film_image_url = film.image_url
+        # Gets Trailer Url
+    trailer_url = getsTrailerUrl(film.imdb_url)
+    if trailer_url != None:
+        selected_film_dictionary["trailer_url"] = trailer_url
 
-    selected_film_json = {"film_subperiod":film_subperiod, "film_period": film_period, "film_id": film_id, "film_title": film_title, "film_release_date": film_release_date, "film_genres": genres, "film_runtime": film_runtime, "film_directors": film_directors, "film_writers": film_writers, "film_plot": new_film_plot, "film_image_url": film_image_url}
-    print(selected_film_json)
-    return selected_film_json
+    # Returns film dictionary
+    print(selected_film_dictionary)
+    return selected_film_dictionary
 
 
 if __name__ == '__main__':
