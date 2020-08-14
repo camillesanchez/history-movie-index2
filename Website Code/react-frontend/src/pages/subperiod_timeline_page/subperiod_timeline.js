@@ -143,7 +143,7 @@ const SubperiodTimeline = () => {
                                     {lsItem["subperiod_dates"]}
                                 </Typography>
                                 <Typography variant="subtitle1" align= "center" style={{color: "#B58D82"}}>
-                                    {lsItem["subperiods_locations"]}
+                                    {lsItem["subperiod_locations"]}
                                 </Typography>
 
                             </Box>
