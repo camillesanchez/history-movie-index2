@@ -130,6 +130,12 @@ def getFilmsList(subperiod_id):
     """ Route to the films_list page.
     Returns a json of the films found after complex database query from subperiod_id."""
 
+    # Gets page number from user
+    args = request.args
+    page_number = 1
+    if "page_number" in args:
+        page_number = int(args["page_number"])
+    
     # Inits session
     session = init_session()
 
@@ -145,15 +151,15 @@ def getFilmsList(subperiod_id):
         # Query Database from Film > Synopses > Keywords > Subperiod
     query_films_par_synopsis = session.query(Film).join(Film.synopses).join(Synopsis.associated_keywords).join(Keyword.associated_subperiods).filter(Subperiod.id == subperiod_id)
 
-        # Join queries to create a complete query
-    query_totale = query_films_par_plot.union( query_films_par_synopsis )
+        # Join queries to create a complete query & gets top 30
+    number_of_films_per_page = 3
+    query_totale = query_films_par_plot.union( query_films_par_synopsis ).limit(number_of_films_per_page).offset((page_number - 1) * number_of_films_per_page).all() 
+    query_totale_count = query_films_par_plot.union( query_films_par_synopsis ).count() 
 
-    # Gets first 10 films from query:
-    counter = 0
+    # Gets data from films of query:
     multifilms = []
     for film in query_totale:
-        counter +=1
-        if counter <=10:
+
             # Gets film name & ID
             film_id = film.id
             film_name = film.primary_title
@@ -166,14 +172,14 @@ def getFilmsList(subperiod_id):
             # Creates a list of dictionaries of the films selected from complexe query
             film_dictionary = {"period_name": period_name, "subperiod_name": subperiod_name, "film_id": film_id, "film_name": film_name, "film_plot": new_film_plot, "film_image_url": film_image_url}
             multifilms.append(film_dictionary)
-        else:
-            break
-    # Gets a json from list of dictionaries & closes session
-    films_json =json.dumps(multifilms, indent =4)
-    print(films_json)
+
+    # Gets a dictionary from multifilms, number_of_films_per_page & query_totale_count
+    total_films = { "total_films_number": query_totale_count, "films_per_page": number_of_films_per_page, "films_list": multifilms }
+    print(total_films)
+
     session.close()
 
-    return films_json
+    return json.dumps(total_films, indent =4)
 
 @app.route('/selected_film/<int:subperiod_id>/<int:film_id>')
 def getSelectedFilm(subperiod_id, film_id):
