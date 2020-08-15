@@ -56,6 +56,14 @@ const useStyles = makeStyles({
     },
     imagePlacement: {
       marginLeft: "7rem"
+    },
+    trailerHyperlink: {
+      color: "black",
+      textDecorationLine: "none",
+      fontSize: "16px"
+    },
+    plotContainer: {
+      marginTop: "2rem"
     }
 })
 
@@ -94,18 +102,27 @@ export default function SelectedFilm() {
                     <Typography variant="h6">
                       <b>Release date:</b> {filmList["film_release_date"]} 
                     </Typography>
-                    <Typography variant="h6">
-                      <b>Genre:</b> {filmList["film_genres"]}
-                    </Typography>
+                    {filmList["film_genres"] !== "Unknown" && (
+                      <>
+                        <Typography variant="h6">
+                          <b>Genre:</b> {filmList["film_genres"]}
+                        </Typography>
+                      </>
+                    )}
+
                     <Typography variant="h6">
                       <b>Film Length:</b> {filmList["film_runtime"]}
                     </Typography>
                     <Typography variant="h6">
                       <b>Director:</b> {filmList["film_directors"]}
                     </Typography>
-                    <Typography variant="h6">
-                      <b>Writer:</b> {filmList["film_writers"]}
-                    </Typography>
+                    {filmList["film_writers"] !== "Unknown" && (
+                      <>
+                        <Typography variant="h6">
+                          <b>Writer:</b> {filmList["film_writers"]}
+                        </Typography>
+                      </>
+                    )}
                   </div>
                 </Grid>
                 <Grid xs={6} >
@@ -113,7 +130,7 @@ export default function SelectedFilm() {
                     <CardMedia component="img" alt={filmList["film_title"]} image={filmList["film_image_url"]} className ={classes.image}/>
                   </Card>
                 </Grid>
-                <Grid xs={12}>
+                <Grid xs={12} className={classes.plotContainer}>
                   <>
                     <Typography variant="h6" >
                       <b>Plot:</b>
@@ -121,6 +138,15 @@ export default function SelectedFilm() {
                     <Typography variant="h6">
                       {filmList["film_plot"]}
                     </Typography>
+                      {filmList["trailer_url"]  && (
+                        <>
+                          <Typography>
+                            <a href= {filmList["trailer_url"]} className={classes.trailerHyperlink}>
+                              Link to film's trailer.
+                            </a>
+                          </Typography>
+                        </>
+                      )}
                   </>
                 </Grid>
               </Grid>

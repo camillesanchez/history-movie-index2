@@ -10,6 +10,7 @@ import {
     CardMedia,
     Typography
 } from "@material-ui/core";
+import { Pagination } from  "@material-ui/lab";
 import NavBar from "../../components/NavBar.js";
 import axios from 'axios';
 import { useState, useEffect } from 'react';
@@ -23,7 +24,7 @@ import parrot from "../../files/funny/parrot.jpg";
 const useStyles = makeStyles(theme => ({
     mainContainer: {
         background: "#AD5F3D",
-        minHeight: "1080px"
+        minHeight: "1080px",
     },
     heading: {
         color: "#FFB5A1",
@@ -59,7 +60,16 @@ const useStyles = makeStyles(theme => ({
     photoError: {
         height: "100%",
         width: "100%"
-    }
+    },
+    pagination: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        paddingBottom: "2rem",
+        '& > *': {
+          marginTop: theme.spacing(2),
+        },
+      }
 }))
 
 const photoArr = [
@@ -79,13 +89,28 @@ const FilmsList = () => {
     const randomPhoto = random_item(photoArr);
 
     const [filmList, setFilmList] = useState([]);
+    const [pagesCount, setPagesCount ] = useState(0);
 
     const [PeriodSubperiodDict, setPeriodSubperiodDict] = useState({});
+
+    const [pageNumber, setPageNumber] = useState(1);
+
+    const handleChange = (event, value) => {
+        setPageNumber(value);
+        axios.get(`http://127.0.0.1:5000/films_list/${subperiod_id}?page_number=${value}`).then((films) => setFilmList(films.data.films_list));
+    };
 
     const { subperiod_id } = useParams();
 
     useEffect(() => {
-        axios.get(`http://127.0.0.1:5000/films_list/${subperiod_id}`).then((films) => setFilmList(films.data));
+        axios.get(`http://127.0.0.1:5000/films_list/${subperiod_id}?page_number=${pageNumber}`).then((films) => {
+            setFilmList(films.data.films_list);
+
+            const { total_films_number, films_per_page } = films.data;
+            let numberOfPages = Math.trunc(total_films_number / films_per_page);
+            if ( (numberOfPages % films_per_page) !== 0 ) {numberOfPages++}
+            setPagesCount(numberOfPages);
+        });
         axios.get(`http://127.0.0.1:5000/subperiod_period_names/${subperiod_id}`).then((period_subperiod) => setPeriodSubperiodDict(period_subperiod.data));
 
     },[]);
@@ -150,8 +175,14 @@ const FilmsList = () => {
 
                         </Grid>
                     ))}
-                    
+
+
                 </Grid>
+                { pagesCount !== 0 &&
+                    <div className= {classes.pagination}>
+                        <Pagination count={pagesCount} page={pageNumber} onChange={handleChange} showFirstButton showLastButton />
+                    </div>
+                }
             </Box>
         </>
         )

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import {  makeStyles } from '@material-ui/core';
+import {  makeStyles, IconButton } from '@material-ui/core';
+import { ChevronLeft, ChevronRight } from'@material-ui/icons';
 import "./slider.scss";
 import ImgComp from "./ImgComp";
 import Header from "./Header";
+// Below photos for slider
 import colisee from "../files/covers/colisee.jpg";
 import gladiator from "../files/covers/Gladiator-Movie.jpg";
 import black_women from "../files/covers/black-women-equal-rights.jpg";
@@ -16,8 +18,8 @@ import worldwar1 from "../files/covers/worldwar1.jpg";
 function Slider(){
 
     const useStyles = makeStyles(theme=>({
-        buttonText:{
-            fontSize: "20px",
+        buttonIcon:{
+            fontSize: "50px",
             color: "#B58D82",
             outline: "black"
         }
@@ -39,9 +41,9 @@ function Slider(){
     const classes = useStyles()
 
     const goLeft = () => {
-
         x === 0 ? setX(-100 * (sliderArr.length-1)) : setX(x + 100);
     };
+
     const goRight = () => {
         (x === - 100 * (sliderArr.length-1)) ? setX(0) : setX(x - 100);
     };
@@ -58,8 +60,13 @@ function Slider(){
                         </div>
                     );
                 })}
-                <button id ="goLeft" onClick={goLeft} className={classes.buttonText}> <b>Left</b></button>
-                <button id ="goRight" onClick={goRight} className={classes.buttonText}> <b>Right</b></button>
+
+                <IconButton id ="goLeft" onClick={goLeft} >
+                    <ChevronLeft className={classes.buttonIcon}/>
+                </IconButton>
+                <IconButton id ="goRight" onClick={goRight} >
+                    <ChevronRight className={classes.buttonIcon}/>
+                </IconButton>
             </div>
         </>
 

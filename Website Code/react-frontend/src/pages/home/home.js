@@ -4,19 +4,17 @@ import Header from "../../components/Header";
 import Slider from "../../components/Slider";
 import Particles from "react-particles-js";
 import {makeStyles} from "@material-ui/styles";
-import axios from 'axios';
-import { useState } from 'react';
-import colisee from "../../files/covers/colisee.jpg";
-import gladiator from "../../files/covers/Gladiator-Movie.jpg";
-import black_women from "../../files/covers/black-women-equal-rights.jpg";
-import hidden_figures from "../../files/covers/Hidden-Figures-Movie.jpg";
-import shipwreck from "../../files/covers/Titanic-wreck.jpg";
-import titanic from "../../files/covers/titanic-movie-cover.jpg";
 
 const useStyles = makeStyles({
     particlesCanva: {
         position: "absolute",
         opacity: "0.3"
+    },
+    mainContainer: {
+        height: "100%"
+    },
+    slider:{
+        marginTop: "-20px"
     }
 })
 
@@ -26,9 +24,19 @@ const Home = () => {
 
     return(
         <>
-            <NavBar/>
-            
-            <Slider/>
+            <div className={classes.mainContainer}>
+                <>
+                    <NavBar/>
+                </>
+                
+            </div>
+            <div className={classes.mainContainer}>
+                <>
+                    <Slider className={classes.slider} />
+                </>
+                
+            </div>
+
         </>
 
         )
