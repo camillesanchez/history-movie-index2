@@ -12,6 +12,9 @@ const useStyles = makeStyles({
     },
     mainContainer: {
         height: "100%"
+    },
+    slider:{
+        marginTop: "-20px"
     }
 })
 
@@ -22,8 +25,16 @@ const Home = () => {
     return(
         <>
             <div className={classes.mainContainer}>
-                <NavBar/>
-                <Slider/>
+                <>
+                    <NavBar/>
+                </>
+                
+            </div>
+            <div className={classes.mainContainer}>
+                <>
+                    <Slider className={classes.slider} />
+                </>
+                
             </div>
 
         </>

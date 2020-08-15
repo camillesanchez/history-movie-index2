@@ -59,7 +59,8 @@ const useStyles = makeStyles({
     },
     trailerHyperlink: {
       color: "black",
-      textDecorationLine: "none"
+      textDecorationLine: "none",
+      fontSize: "16px"
     },
     plotContainer: {
       marginTop: "2rem"
@@ -139,9 +140,9 @@ export default function SelectedFilm() {
                     </Typography>
                       {filmList["trailer_url"]  && (
                         <>
-                          <Typography variant="h7">
+                          <Typography>
                             <a href= {filmList["trailer_url"]} className={classes.trailerHyperlink}>
-                              Film Trailer Link
+                              Link to film's trailer.
                             </a>
                           </Typography>
                         </>
